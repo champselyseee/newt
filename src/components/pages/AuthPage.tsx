@@ -30,9 +30,11 @@ const PERKS = [
 export function AuthPage({
   onToast,
   onNavigate,
+  onAuth,
 }: {
   onToast: (text: string, kind?: ToastKind) => void
   onNavigate: (p: Page) => void
+  onAuth: () => void
 }) {
   const reduce = useReducedMotion()
   const [mode, setMode] = useState<Mode>('login')
@@ -61,6 +63,7 @@ export function AuthPage({
       mode === 'login' ? 'Вход выполнен (демо)' : 'Аккаунт создан (демо)',
       'success',
     )
+    onAuth()
     onNavigate('profile')
   }
 

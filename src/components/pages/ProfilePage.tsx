@@ -33,11 +33,13 @@ const ACH_ICONS = { trophy: IconTrophy, flame: IconFlame, star: IconStar, bolt: 
 export function ProfilePage({
   onToast,
   onNavigate,
+  onLogout,
   balance,
   planName,
 }: {
   onToast: (text: string, kind?: ToastKind) => void
   onNavigate: (p: Page) => void
+  onLogout: () => void
   balance: number
   planName: string
 }) {
@@ -180,6 +182,7 @@ export function ProfilePage({
         <button
           className={styles.logout}
           onClick={() => {
+            onLogout()
             onToast('Вы вышли из аккаунта (демо)', 'success')
             onNavigate('auth')
           }}
