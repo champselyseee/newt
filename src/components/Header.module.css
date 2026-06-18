@@ -6,6 +6,9 @@
   backdrop-filter: saturate(140%) blur(10px);
   -webkit-backdrop-filter: saturate(140%) blur(10px);
   border-bottom: 2.5px solid var(--ink);
+  /* Учитываем «чёлку»/статус-бар (viewport-fit=cover): фон заходит под вырез,
+     а содержимое опускается ниже безопасной зоны — иначе верх «съезжает». */
+  padding-top: env(safe-area-inset-top);
 }
 
 .inner {
@@ -66,6 +69,55 @@
   }
 }
 
+/* Аккаунт-контрол: «Профиль» + «Войти» в одной рамке с общей offset-тенью.
+   Два сегмента, разделённые чернильной линией, читаются как единый блок. */
+.account {
+  display: inline-flex;
+  align-items: stretch;
+  margin-right: 8px;
+  border: 2.5px solid var(--ink);
+  border-radius: 12px;
+  box-shadow: 3px 3px 0 var(--ink);
+  background: var(--paper-card);
+  overflow: hidden;
+}
+.accountBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  transition:
+    background 0.16s ease,
+    filter 0.16s ease;
+}
+.accountProfile {
+  color: var(--ink);
+}
+.accountProfile:hover {
+  background: var(--yellow);
+}
+.accountActive {
+  background: var(--yellow);
+}
+.accountLogin {
+  background: var(--indigo);
+  color: var(--on-accent);
+  border-left: 2.5px solid var(--ink);
+}
+.accountLogin:hover {
+  filter: brightness(1.12);
+}
+.accountLogin:active {
+  filter: brightness(0.94);
+}
+
 .navItem {
   position: relative;
   display: inline-flex;
@@ -111,147 +163,6 @@
   align-items: center;
   gap: 10px;
 }
-.login {
-  display: none;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  background: var(--indigo);
-  color: var(--on-accent);
-  border: 2.5px solid var(--ink);
-  border-radius: 12px;
-  box-shadow: 3px 3px 0 var(--ink);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 14px;
-  cursor: pointer;
-  transition:
-    transform 0.12s cubic-bezier(0.3, 1.4, 0.5, 1),
-    box-shadow 0.12s ease;
-}
-.login:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0 var(--ink);
-}
-.login:active {
-  transform: translate(3px, 3px);
-  box-shadow: 0 0 0 var(--ink);
-}
-@media (min-width: 560px) {
-  .login {
-    display: inline-flex;
-  }
-}
-
-/* Чип остатка проверок — ведёт на тарифы */
-.balance {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 8px 12px;
-  background: var(--paper-card);
-  color: var(--ink);
-  border: 2.5px solid var(--ink);
-  border-radius: 12px;
-  box-shadow: 3px 3px 0 var(--yellow);
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 14px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition:
-    transform 0.12s cubic-bezier(0.3, 1.4, 0.5, 1),
-    box-shadow 0.12s ease;
-}
-.balance svg {
-  color: var(--coral-deep);
-}
-.balance:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0 var(--yellow);
-}
-.balance:active {
-  transform: translate(3px, 3px);
-  box-shadow: 0 0 0 var(--yellow);
-}
-
-/* Счётчик до ЕГЭ: метка + две строки предметов */
-.counter {
-  display: none;
-  align-items: center;
-  gap: 10px;
-  padding: 7px 13px;
-  background: var(--paper-card);
-  border: 2.5px solid var(--ink);
-  border-radius: 12px;
-  box-shadow: 3px 3px 0 var(--coral);
-  color: var(--ink);
-  white-space: nowrap;
-  cursor: pointer;
-  transition:
-    transform 0.12s cubic-bezier(0.3, 1.4, 0.5, 1),
-    box-shadow 0.12s ease;
-}
-.counter:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0 var(--coral);
-}
-.counter:active {
-  transform: translate(3px, 3px);
-  box-shadow: 0 0 0 var(--coral);
-}
-.counterHead {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  color: var(--coral-deep);
-}
-.counterRows {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  padding-left: 10px;
-  border-left: 2px solid var(--paper-2);
-  line-height: 1.25;
-}
-.counterRow {
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 12.5px;
-  color: var(--ink-soft);
-}
-.counterAbbr {
-  color: var(--ink);
-  font-weight: 700;
-}
-.counterRow b {
-  font-family: var(--font-display);
-  font-weight: 800;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-}
-/* Видно везде, где есть место: с 640px и выше. Ниже — счётчик в бургер-меню.
-   Полное меню появляется только с 1024px, поэтому конфликта с ним нет. */
-@media (min-width: 640px) {
-  .counter {
-    display: inline-flex;
-  }
-}
-
-.mobileCounter {
-  background: var(--coral);
-  color: var(--on-accent);
-  box-shadow: 3px 3px 0 var(--ink);
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 15px;
-}
-
 .burger {
   display: inline-flex;
   align-items: center;
@@ -303,8 +214,53 @@
   background: var(--yellow);
   box-shadow: 3px 3px 0 var(--ink);
 }
-.mobileLogin {
+/* Аккаунт-контрол в мобильном меню: «Профиль» (растягивается) + сегмент
+   «Войти» в одной рамке. */
+.mAccount {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  border: 2.5px solid var(--ink);
+  border-radius: 14px;
+  background: var(--paper-card);
+  overflow: hidden;
+}
+.mAccountProfile {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--ink);
+  text-align: left;
+}
+.mAccountActive {
+  background: var(--yellow);
+}
+.mAccountLogin {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 22px;
+  border: none;
+  border-left: 2.5px solid var(--ink);
   background: var(--indigo);
   color: var(--on-accent);
-  box-shadow: 3px 3px 0 var(--ink);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  transition: filter 0.16s ease;
+}
+.mAccountLogin:hover {
+  filter: brightness(1.12);
+}
+.mAccountLogin:active {
+  filter: brightness(0.94);
 }

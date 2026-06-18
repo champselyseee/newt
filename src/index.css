@@ -40,7 +40,8 @@
 
   /* Раскладка сайта */
   --container: 1120px;
-  --header-h: 72px;
+  /* Высота шапки. На телефоне делаем компактнее (см. медиазапрос ниже). */
+  --header-h: 64px;
   --z-base: 0;
   --z-sticky: 40;
   --z-overlay: 100;
@@ -145,6 +146,13 @@ button {
 @media (min-width: 768px) {
   .container {
     padding-inline: 32px;
+  }
+}
+
+/* На телефоне шапка компактнее, чтобы не занимать пол-экрана. */
+@media (max-width: 767px) {
+  :root {
+    --header-h: 56px;
   }
 }
 
