@@ -11,14 +11,18 @@
   padding-top: env(safe-area-inset-top);
 }
 
-/* Мобайл: плашка уезжает вверх при прокрутке вниз (логика в Header.tsx). */
+/* Мобайл: при прокрутке вниз логотип уезжает (полоса-плашка с чипами остаётся
+   сверху). Логика прокрутки — в Header.tsx. */
 @media (max-width: 1023px) {
-  .header {
-    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: transform;
+  .brand {
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease;
   }
-  .header.hidden {
-    transform: translateY(-100%);
+  .brandHidden {
+    opacity: 0;
+    transform: translateX(-14px);
+    pointer-events: none;
   }
 }
 
@@ -168,23 +172,19 @@
   display: inline-flex;
 }
 
-/* Мобильный фикс-кластер сверху справа: баланс проверок + кнопка меню.
-   Виден всегда (даже когда плашка скрыта). На десктопе скрыт. */
-.fab {
+/* Чипы на плашке (мобайл): баланс проверок + кнопка меню справа. Обычные
+   элементы в потоке полосы. На десктопе скрыты — там полноценная навигация. */
+.chips {
   display: none;
 }
 @media (max-width: 1023px) {
-  .fab {
-    position: fixed;
-    top: calc(env(safe-area-inset-top, 0px) + 6px);
-    right: 16px;
-    z-index: var(--z-toast);
+  .chips {
     display: flex;
     align-items: center;
     gap: 8px;
   }
 }
-.fabBalance {
+.chipBalance {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -204,14 +204,14 @@
     transform 0.12s cubic-bezier(0.3, 1.4, 0.5, 1),
     box-shadow 0.12s ease;
 }
-.fabBalance svg {
+.chipBalance svg {
   color: var(--coral-deep);
 }
-.fabBalance:active {
+.chipBalance:active {
   transform: translate(3px, 3px);
   box-shadow: 0 0 0 var(--yellow);
 }
-.fabBurger {
+.chipBurger {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -227,12 +227,12 @@
     transform 0.12s cubic-bezier(0.3, 1.4, 0.5, 1),
     box-shadow 0.12s ease;
 }
-.fabBurger:active {
+.chipBurger:active {
   transform: translate(3px, 3px);
   box-shadow: 0 0 0 var(--ink);
 }
 
-/* Мобильное меню — фиксированная панель под плашкой (логотип и фикс-кластер
+/* Мобильное меню — фиксированная панель под плашкой (логотип и чипы
    остаются видимыми сверху). */
 .mobileMenu {
   position: fixed;

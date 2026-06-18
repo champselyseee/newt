@@ -44,22 +44,23 @@ export function Header({
   balance: number
 }) {
   const [open, setOpen] = useState(false)
-  const [hidden, setHidden] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
 
-  /* Мобайл: прячем плашку при прокрутке вниз, показываем при прокрутке вверх
-     и у самого верха. Когда меню открыто — держим видимой. На десктопе класс
-     .hidden ни на что не влияет (см. медиазапрос в CSS). */
+  /* Мобайл: при прокрутке вниз прячем логотип (полоса-плашка с чипами остаётся
+     сверху). При прокрутке вверх и у самого верха — логотип снова виден.
+     Когда меню открыто — показываем логотип. На десктопе класс ни на что не
+     влияет (стили только в мобильном медиазапросе). */
   useEffect(() => {
     let lastY = window.scrollY
     function onScroll() {
       const y = window.scrollY
       if (open || y < 12) {
-        setHidden(false)
+        setScrolled(false)
         lastY = y
         return
       }
-      if (y > lastY + 4) setHidden(true)
-      else if (y < lastY - 4) setHidden(false)
+      if (y > lastY + 4) setScrolled(true)
+      else if (y < lastY - 4) setScrolled(false)
       lastY = y
     }
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -75,10 +76,14 @@ export function Header({
 
   return (
     <>
-      <header className={`${styles.header} ${hidden ? styles.hidden : ''}`}>
+      <header className={styles.header}>
         <div className={`container ${styles.inner}`}>
-          {/* Логотип */}
-          <button className={styles.brand} onClick={() => go('check')} aria-label="На главную">
+          {/* Логотип (прячется при прокрутке вниз на мобиле) */}
+          <button
+            className={`${styles.brand} ${scrolled ? styles.brandHidden : ''}`}
+            onClick={() => go('check')}
+            aria-label="На главную"
+          >
             <span className={styles.mark} aria-hidden="true">
               <IconCheck size={20} />
             </span>
@@ -148,29 +153,29 @@ export function Header({
               </div>
             )}
           </nav>
+
+          {/* Чипы на плашке (мобайл): баланс проверок + меню. Остаются на полосе
+              даже когда логотип уехал при прокрутке. */}
+          <div className={styles.chips}>
+            <button
+              className={styles.chipBalance}
+              onClick={() => go('pricing')}
+              aria-label={`Осталось ${balance} проверок — открыть тарифы`}
+            >
+              <IconBolt size={16} />
+              <b>{balance}</b>
+            </button>
+            <button
+              className={styles.chipBurger}
+              onClick={() => setOpen((v) => !v)}
+              aria-expanded={open}
+              aria-label={open ? 'Закрыть меню' : 'Открыть меню'}
+            >
+              {open ? <IconClose size={22} /> : <IconMenu size={22} />}
+            </button>
+          </div>
         </div>
       </header>
-
-      {/* Мобильный фикс-кластер: баланс проверок + меню. Всегда виден сверху
-          справа, не зависит от скрытия плашки. */}
-      <div className={styles.fab}>
-        <button
-          className={styles.fabBalance}
-          onClick={() => go('pricing')}
-          aria-label={`Осталось ${balance} проверок — открыть тарифы`}
-        >
-          <IconBolt size={16} />
-          <b>{balance}</b>
-        </button>
-        <button
-          className={styles.fabBurger}
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          aria-label={open ? 'Закрыть меню' : 'Открыть меню'}
-        >
-          {open ? <IconClose size={22} /> : <IconMenu size={22} />}
-        </button>
-      </div>
 
       {/* Мобильное выпадающее меню */}
       <AnimatePresence>
