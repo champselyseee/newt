@@ -27,6 +27,8 @@ export function App() {
   // Биллинг (демо): остаток проверок, текущий план и выбранный для оплаты тариф.
   const [balance, setBalance] = useState(INITIAL_BALANCE)
   const [planName, setPlanName] = useState(FREE_PLAN)
+  // Авторизован ли пользователь (демо): управляет видимостью кнопки «Войти».
+  const [isAuthed, setIsAuthed] = useState(false)
   const [selectedOffer, setSelectedOffer] = useState<PurchaseOffer | null>(null)
   const reduce = useReducedMotion()
   const mainRef = useRef<HTMLElement>(null)
@@ -97,12 +99,19 @@ export function App() {
           <ProfilePage
             onToast={notify}
             onNavigate={setPage}
+            onLogout={() => setIsAuthed(false)}
             balance={balance}
             planName={planName}
           />
         )
       case 'auth':
-        return <AuthPage onToast={notify} onNavigate={setPage} />
+        return (
+          <AuthPage
+            onToast={notify}
+            onNavigate={setPage}
+            onAuth={() => setIsAuthed(true)}
+          />
+        )
       case 'check':
       default:
         return <CheckPage onToast={notify} />
@@ -122,7 +131,7 @@ export function App() {
       <a className="skip-link" href="#main">
         К содержимому
       </a>
-      <Header current={page} onNavigate={setPage} balance={balance} />
+      <Header current={page} onNavigate={setPage} isAuthed={isAuthed} />
 
       <main id="main" ref={mainRef} tabIndex={-1} style={{ outline: 'none' }}>
         <AnimatePresence mode="wait" initial={false}>

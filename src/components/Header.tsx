@@ -1,9 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { NAV_ITEMS, type Page } from '../lib/nav'
-import { orderedExamViews, pluralDays } from '../lib/examDates'
 import {
-  IconBolt,
   IconBook,
   IconCalendar,
   IconCheck,
@@ -16,16 +14,6 @@ import {
 } from '../lib/icons'
 import styles from './Header.module.css'
 
-/* Оба предмета (Рус, Англ) для счётчика в шапке. Обновляем раз в минуту. */
-function useExams() {
-  const [now, setNow] = useState(() => new Date())
-  useEffect(() => {
-    const id = window.setInterval(() => setNow(new Date()), 60000)
-    return () => window.clearInterval(id)
-  }, [])
-  return orderedExamViews(now)
-}
-
 const NAV_ICONS = {
   check: IconCheck,
   book: IconBook,
@@ -35,22 +23,27 @@ const NAV_ICONS = {
   user: IconUser,
 }
 
+/* «Профиль» выводим отдельным аккаунт-блоком (см. ниже), остальные пункты —
+   обычным рядом. */
+const SECTION_ITEMS = NAV_ITEMS.filter((i) => i.id !== 'profile')
+
 export function Header({
   current,
   onNavigate,
-  balance,
+  isAuthed,
 }: {
   current: Page
   onNavigate: (p: Page) => void
-  balance: number
+  isAuthed: boolean
 }) {
   const [open, setOpen] = useState(false)
-  const exams = useExams()
 
   function go(p: Page) {
     onNavigate(p)
     setOpen(false)
   }
+
+  const profileActive = current === 'profile'
 
   return (
     <header className={styles.header}>
@@ -67,7 +60,42 @@ export function Header({
 
         {/* Десктоп-навигация */}
         <nav className={styles.nav} aria-label="Основная навигация">
-          {NAV_ITEMS.map((item) => {
+          {/* Аккаунт: «Профиль» + сегмент «Войти» (пока не авторизован). */}
+          {isAuthed ? (
+            <button
+              className={`${styles.navItem} ${profileActive ? styles.active : ''}`}
+              onClick={() => go('profile')}
+              aria-current={profileActive ? 'page' : undefined}
+            >
+              <span className={styles.navIcon}>
+                <IconUser size={18} />
+              </span>
+              <span className={styles.navLabel}>Профиль</span>
+            </button>
+          ) : (
+            <div className={styles.account}>
+              <button
+                className={`${styles.accountBtn} ${styles.accountProfile} ${
+                  profileActive ? styles.accountActive : ''
+                }`}
+                onClick={() => go('profile')}
+                aria-current={profileActive ? 'page' : undefined}
+              >
+                <IconUser size={18} />
+                <span>Профиль</span>
+              </button>
+              <button
+                className={`${styles.accountBtn} ${styles.accountLogin}`}
+                onClick={() => go('auth')}
+              >
+                <IconKey size={18} />
+                <span>Войти</span>
+              </button>
+            </div>
+          )}
+
+          {/* Разделы */}
+          {SECTION_ITEMS.map((item) => {
             const Icon = NAV_ICONS[item.iconKey]
             const active = current === item.id
             return (
@@ -93,45 +121,8 @@ export function Header({
           })}
         </nav>
 
+        {/* Кнопка мобильного меню */}
         <div className={styles.right}>
-          {/* Счётчик до ЕГЭ: оба предмета */}
-          <button
-            className={styles.counter}
-            onClick={() => go('counter')}
-            aria-label={`До ЕГЭ: ${exams
-              .map((e) => `${e.exam.shortName} ${e.days} ${pluralDays(e.days)}`)
-              .join(', ')}`}
-          >
-            <span className={styles.counterHead}>
-              <IconCalendar size={15} />
-              <span>До ЕГЭ</span>
-            </span>
-            <span className={styles.counterRows}>
-              {exams.map((e) => (
-                <span key={e.exam.id} className={styles.counterRow}>
-                  <span className={styles.counterAbbr}>{e.exam.abbr}</span> —{' '}
-                  <b>{e.days}</b> {pluralDays(e.days)}
-                </span>
-              ))}
-            </span>
-          </button>
-
-          {/* Остаток проверок — ведёт на тарифы */}
-          <button
-            className={styles.balance}
-            onClick={() => go('pricing')}
-            aria-label={`Осталось ${balance} проверок — открыть тарифы`}
-          >
-            <IconBolt size={16} />
-            <b>{balance}</b>
-          </button>
-
-          <button className={styles.login} onClick={() => go('auth')}>
-            <IconKey size={18} />
-            <span>Войти</span>
-          </button>
-
-          {/* Кнопка мобильного меню */}
           <button
             className={styles.burger}
             onClick={() => setOpen((v) => !v)}
@@ -154,23 +145,37 @@ export function Header({
             transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className={`container ${styles.mobileInner}`}>
-              <button
-                className={`${styles.mobileItem} ${styles.mobileCounter}`}
-                onClick={() => go('counter')}
-              >
-                <IconCalendar size={20} />
-                <span>
-                  До ЕГЭ:{' '}
-                  {exams
-                    .map((e) => `${e.exam.abbr} — ${e.days} ${pluralDays(e.days)}`)
-                    .join(', ')}
-                </span>
-              </button>
-              <button className={styles.mobileItem} onClick={() => go('pricing')}>
-                <IconBolt size={20} />
-                <span>Осталось проверок: {balance}</span>
-              </button>
-              {NAV_ITEMS.map((item) => {
+              {/* Аккаунт: «Профиль» + сегмент «Войти». */}
+              {isAuthed ? (
+                <button
+                  className={`${styles.mobileItem} ${profileActive ? styles.mobileActive : ''}`}
+                  onClick={() => go('profile')}
+                  aria-current={profileActive ? 'page' : undefined}
+                >
+                  <IconUser size={20} />
+                  <span>Профиль</span>
+                </button>
+              ) : (
+                <div className={styles.mAccount}>
+                  <button
+                    className={`${styles.mAccountProfile} ${
+                      profileActive ? styles.mAccountActive : ''
+                    }`}
+                    onClick={() => go('profile')}
+                    aria-current={profileActive ? 'page' : undefined}
+                  >
+                    <IconUser size={20} />
+                    <span>Профиль</span>
+                  </button>
+                  <button className={styles.mAccountLogin} onClick={() => go('auth')}>
+                    <IconKey size={20} />
+                    <span>Войти</span>
+                  </button>
+                </div>
+              )}
+
+              {/* Разделы */}
+              {SECTION_ITEMS.map((item) => {
                 const Icon = NAV_ICONS[item.iconKey]
                 const active = current === item.id
                 return (
@@ -185,13 +190,6 @@ export function Header({
                   </button>
                 )
               })}
-              <button
-                className={`${styles.mobileItem} ${styles.mobileLogin}`}
-                onClick={() => go('auth')}
-              >
-                <IconKey size={20} />
-                <span>Войти</span>
-              </button>
             </div>
           </motion.div>
         )}
