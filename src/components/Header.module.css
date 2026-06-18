@@ -11,6 +11,17 @@
   padding-top: env(safe-area-inset-top);
 }
 
+/* Мобайл: плашка уезжает вверх при прокрутке вниз (логика в Header.tsx). */
+@media (max-width: 1023px) {
+  .header {
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+  .header.hidden {
+    transform: translateY(-100%);
+  }
+}
+
 .inner {
   height: var(--header-h);
   display: flex;
@@ -74,7 +85,7 @@
 .account {
   display: inline-flex;
   align-items: stretch;
-  margin-right: 8px;
+  margin-left: 8px;
   border: 2.5px solid var(--ink);
   border-radius: 12px;
   box-shadow: 3px 3px 0 var(--ink);
@@ -157,13 +168,50 @@
   display: inline-flex;
 }
 
-/* Правая часть */
-.right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* Мобильный фикс-кластер сверху справа: баланс проверок + кнопка меню.
+   Виден всегда (даже когда плашка скрыта). На десктопе скрыт. */
+.fab {
+  display: none;
 }
-.burger {
+@media (max-width: 1023px) {
+  .fab {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 6px);
+    right: 16px;
+    z-index: var(--z-toast);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+.fabBalance {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 44px;
+  padding: 0 13px;
+  background: var(--paper-card);
+  color: var(--ink);
+  border: 2.5px solid var(--ink);
+  border-radius: 12px;
+  box-shadow: 3px 3px 0 var(--yellow);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    transform 0.12s cubic-bezier(0.3, 1.4, 0.5, 1),
+    box-shadow 0.12s ease;
+}
+.fabBalance svg {
+  color: var(--coral-deep);
+}
+.fabBalance:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--yellow);
+}
+.fabBurger {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -172,20 +220,30 @@
   border: 2.5px solid var(--ink);
   background: var(--paper-card);
   border-radius: 12px;
+  box-shadow: 3px 3px 0 var(--ink);
   cursor: pointer;
   color: var(--ink);
+  transition:
+    transform 0.12s cubic-bezier(0.3, 1.4, 0.5, 1),
+    box-shadow 0.12s ease;
 }
-@media (min-width: 1024px) {
-  .burger {
-    display: none;
-  }
+.fabBurger:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--ink);
 }
 
-/* Мобильное меню */
+/* Мобильное меню — фиксированная панель под плашкой (логотип и фикс-кластер
+   остаются видимыми сверху). */
 .mobileMenu {
-  overflow: hidden;
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + var(--header-h));
+  left: 0;
+  right: 0;
+  z-index: var(--z-overlay);
   background: var(--paper);
   border-bottom: 2.5px solid var(--ink);
+  max-height: calc(100dvh - env(safe-area-inset-top, 0px) - var(--header-h));
+  overflow-y: auto;
 }
 .mobileInner {
   display: flex;

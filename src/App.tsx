@@ -131,7 +131,7 @@ export function App() {
       <a className="skip-link" href="#main">
         К содержимому
       </a>
-      <Header current={page} onNavigate={setPage} isAuthed={isAuthed} />
+      <Header current={page} onNavigate={setPage} isAuthed={isAuthed} balance={balance} />
 
       <main id="main" ref={mainRef} tabIndex={-1} style={{ outline: 'none' }}>
         <AnimatePresence mode="wait" initial={false}>
