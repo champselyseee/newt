@@ -66,6 +66,14 @@ export function Header({
     return () => window.removeEventListener('scroll', onScroll)
   }, [open])
 
+  /* Когда шапка спрятана — убираем и фиксированную «крышку» (body::before):
+     иначе сверху осталась бы бежевая полоса вместо контента. Класс на <body>
+     цепляет правило body.header-hidden::before в index.css. */
+  useEffect(() => {
+    document.body.classList.toggle('header-hidden', scrolled)
+    return () => document.body.classList.remove('header-hidden')
+  }, [scrolled])
+
   function go(p: Page) {
     onNavigate(p)
     setOpen(false)
@@ -77,7 +85,7 @@ export function Header({
     <>
       <header className={`${styles.header} ${scrolled ? styles.headerHidden : ''}`}>
         <div className={`container ${styles.inner}`}>
-          {/* Логотип — часть прячущейся плашки (движется вместе с ней) */}
+          {/* Логотип — часть прячущейся плашки (двигается вместе с ней) */}
           <button
             className={styles.brand}
             onClick={() => go('check')}

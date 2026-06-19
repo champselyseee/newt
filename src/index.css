@@ -98,6 +98,16 @@ body::before {
   background: var(--paper);
   z-index: 90; /* выше шапки (--z-sticky: 40), ниже меню/тостов */
   pointer-events: none;
+  /* Прячется вместе с шапкой (класс header-hidden ставит Header.tsx на <body>),
+     чтобы при прокрутке вниз сверху не оставалось бежевой полосы — сайт во весь
+     экран. Возвращается вместе с шапкой при прокрутке вверх. */
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+body.header-hidden::before {
+  transform: translateY(-100%);
+  opacity: 0;
 }
 
 /* Телефон: «крышка» закрывает не только чёлку, а ВСЮ верхнюю полосу — от края
