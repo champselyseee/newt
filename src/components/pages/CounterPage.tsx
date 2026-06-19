@@ -161,8 +161,15 @@ export function CounterPage() {
               <tbody>
                 {col.map((row) => {
                   const isMax = row.test === scale.maxTestScore
+                  // Подсвечиваем диапазон первичных баллов от 1 до scale.highlightTo.
+                  const isHighlight = row.primary <= scale.highlightTo
+                  const rowClass = isMax
+                    ? styles.maxRow
+                    : isHighlight
+                      ? styles.highlightRow
+                      : ''
                   return (
-                    <tr key={row.primary} className={isMax ? styles.maxRow : ''}>
+                    <tr key={row.primary} className={rowClass}>
                       <td>{row.primary}</td>
                       <td className={styles.testCell}>{row.test}</td>
                     </tr>

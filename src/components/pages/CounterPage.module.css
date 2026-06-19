@@ -320,6 +320,14 @@
   font-weight: 800;
   border-left: 1.5px solid var(--paper-2);
 }
+/* Выделенный диапазон первичных баллов — жёлтый маркер */
+.highlightRow td,
+.highlightRow td.testCell {
+  background: var(--yellow);
+  color: var(--ink);
+  border-left-color: rgba(32, 32, 46, 0.18);
+}
+
 /* Строка с максимальным (100) баллом — подсвечиваем кораллом */
 .maxRow td,
 .maxRow td.testCell {

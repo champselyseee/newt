@@ -23,6 +23,8 @@ export interface ExamScale {
   maxPrimaryScore: number
   /** Максимум тестовых баллов (обычно 100). */
   maxTestScore: number
+  /** Подсвечиваем строки с первичным баллом от 1 до этого значения включительно. */
+  highlightTo: number
   /** Строки перевода, отсортированы по возрастанию первичного балла. */
   rows: ScaleRow[]
 }
@@ -38,7 +40,12 @@ interface RawScale {
 const RAW = raw as Record<string, RawScale>
 
 /* Превращаем «карту» conversion {"1": 3, ...} в отсортированный массив строк. */
-function buildScale(id: string, short: string, src: RawScale): ExamScale {
+function buildScale(
+  id: string,
+  short: string,
+  highlightTo: number,
+  src: RawScale,
+): ExamScale {
   const rows = Object.entries(src.conversion)
     .map(([primary, test]) => ({ primary: Number(primary), test }))
     .sort((a, b) => a.primary - b.primary)
@@ -48,14 +55,16 @@ function buildScale(id: string, short: string, src: RawScale): ExamScale {
     short,
     maxPrimaryScore: src.maxPrimaryScore,
     maxTestScore: src.maxTestScore,
+    highlightTo,
     rows,
   }
 }
 
-/* ⬇️ Предметы для вкладки «Экзамен». Порядок = порядок в переключателе. */
+/* ⬇️ Предметы для вкладки «Экзамен». Порядок = порядок в переключателе.
+   Третий аргумент — до какого первичного балла подсвечивать строки. */
 export const EXAM_SCALES: ExamScale[] = [
-  buildScale('russian', 'Русский', RAW.russian),
-  buildScale('english', 'Английский', RAW.english),
+  buildScale('russian', 'Русский', 22, RAW.russian),
+  buildScale('english', 'Английский', 20, RAW.english),
 ]
 
 /** Нарезает строки на колонки по `size` строк — чтобы длинная таблица
