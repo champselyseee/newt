@@ -46,10 +46,9 @@ export function Header({
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
-  /* Мобайл: при прокрутке вниз прячем логотип (полоса-плашка с чипами остаётся
-     сверху). При прокрутке вверх и у самого верха — логотип снова виден.
-     Когда меню открыто — показываем логотип. На десктопе класс ни на что не
-     влияет (стили только в мобильном медиазапросе). */
+  /* При прокрутке вниз прячем содержимое плашки: логотип уезжает влево, правый
+     блок — вправо (на мобиле это чипы, на десктопе — навигация). При прокрутке
+     вверх и у самого верха всё снова видно. Когда меню открыто — показываем. */
   useEffect(() => {
     let lastY = window.scrollY
     function onScroll() {
@@ -78,7 +77,7 @@ export function Header({
     <>
       <header className={styles.header}>
         <div className={`container ${styles.inner}`}>
-          {/* Логотип (прячется при прокрутке вниз на мобиле) */}
+          {/* Логотип (при прокрутке вниз уезжает влево — на мобиле и десктопе) */}
           <button
             className={`${styles.brand} ${scrolled ? styles.brandHidden : ''}`}
             onClick={() => go('check')}
@@ -92,8 +91,12 @@ export function Header({
             </span>
           </button>
 
-          {/* Десктоп-навигация: разделы, аккаунт-блок — у правого края */}
-          <nav className={styles.nav} aria-label="Основная навигация">
+          {/* Десктоп-навигация: разделы, аккаунт-блок — у правого края.
+              При прокрутке вниз уезжает вправо (зеркально логотипу). */}
+          <nav
+            className={`${styles.nav} ${scrolled ? styles.navHidden : ''}`}
+            aria-label="Основная навигация"
+          >
             {DESKTOP_SECTIONS.map((item) => {
               const Icon = NAV_ICONS[item.iconKey]
               const active = current === item.id
@@ -154,9 +157,9 @@ export function Header({
             )}
           </nav>
 
-          {/* Чипы на плашке (мобайл): баланс проверок + меню. Остаются на полосе
-              даже когда логотип уехал при прокрутке. */}
-          <div className={styles.chips}>
+          {/* Чипы на плашке (мобайл): баланс проверок + меню. При прокрутке
+              вниз уезжают вправо (зеркально логотипу, уходящему влево). */}
+          <div className={`${styles.chips} ${scrolled ? styles.chipsHidden : ''}`}>
             <button
               className={styles.chipBalance}
               onClick={() => go('pricing')}

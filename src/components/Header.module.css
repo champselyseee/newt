@@ -16,8 +16,9 @@
   transform: translateZ(0);
 }
 
-/* Мобайл: при прокрутке вниз логотип уезжает (полоса-плашка с чипами остаётся
-   сверху). Логика прокрутки — в Header.tsx. */
+/* При прокрутке вниз содержимое плашки разъезжается: логотип уходит влево,
+   правый блок (чипы на мобиле / навигация на десктопе) — вправо. Логика
+   прокрутки (класс scrolled) — в Header.tsx; стили см. ниже у .brand/.nav/.chips. */
 @media (max-width: 1023px) {
   /* Плашка — сплошной фон страницы без матового стекла и без границ: весь верх
      (от чёлки до низа плашки) залит бежевым одним слоем, без полос и швов,
@@ -28,16 +29,19 @@
     -webkit-backdrop-filter: none;
     border-bottom: none;
   }
-  .brand {
-    transition:
-      opacity 0.25s ease,
-      transform 0.25s ease;
-  }
-  .brandHidden {
-    opacity: 0;
-    transform: translateX(-14px);
-    pointer-events: none;
-  }
+}
+
+/* Скрытие логотипа при прокрутке вниз — на всех шириных (мобайл и десктоп):
+   уезжает влево и исчезает. */
+.brand {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+.brandHidden {
+  opacity: 0;
+  transform: translateX(-14px);
+  pointer-events: none;
 }
 
 .inner {
@@ -91,11 +95,21 @@
   display: none;
   align-items: center;
   gap: 4px;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
 }
 @media (min-width: 1024px) {
   .nav {
     display: flex;
   }
+}
+/* Десктоп: при прокрутке вниз вся навигация уезжает вправо и исчезает
+   (зеркально логотипу, который уходит влево). */
+.navHidden {
+  opacity: 0;
+  transform: translateX(14px);
+  pointer-events: none;
 }
 
 /* Аккаунт-контрол: «Профиль» + «Войти» в одной рамке с общей offset-тенью.
@@ -197,6 +211,18 @@
     align-items: center;
     gap: 8px;
   }
+}
+.chips {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+/* Мобайл: при прокрутке вниз чипы уезжают вправо и исчезают (зеркально
+   логотипу, который уходит влево). */
+.chipsHidden {
+  opacity: 0;
+  transform: translateX(14px);
+  pointer-events: none;
 }
 .chipBalance {
   display: inline-flex;
