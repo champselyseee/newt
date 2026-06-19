@@ -8,7 +8,7 @@ import {
   IconCheck,
   IconClose,
   IconGrid,
-  IconKey,
+  IconLogin,
   IconMenu,
   IconStar,
   IconUser,
@@ -146,9 +146,9 @@ export function Header({
                 <button
                   className={`${styles.accountBtn} ${styles.accountLogin}`}
                   onClick={() => go('auth')}
+                  aria-label="Войти"
                 >
-                  <IconKey size={18} />
-                  <span>Войти</span>
+                  <IconLogin size={18} />
                 </button>
               </div>
             )}
@@ -210,9 +210,12 @@ export function Header({
                     <IconUser size={20} />
                     <span>Профиль</span>
                   </button>
-                  <button className={styles.mAccountLogin} onClick={() => go('auth')}>
-                    <IconKey size={20} />
-                    <span>Войти</span>
+                  <button
+                    className={styles.mAccountLogin}
+                    onClick={() => go('auth')}
+                    aria-label="Войти"
+                  >
+                    <IconLogin size={20} />
                   </button>
                 </div>
               )}

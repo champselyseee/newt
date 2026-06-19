@@ -57,6 +57,15 @@ export const IconKey = (p: IconProps) => (
   </Svg>
 )
 
+/* «Вход»: дверь-рамка справа и стрелка, входящая внутрь (по образцу из /design). */
+export const IconLogin = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M15 3h3a2.5 2.5 0 0 1 2.5 2.5v13A2.5 2.5 0 0 1 18 21h-3" />
+    <path d="M3 12h11" />
+    <path d="m9.5 7 5 5-5 5" />
+  </Svg>
+)
+
 export const IconUpload = (p: IconProps) => (
   <Svg {...p}>
     <path d="M12 16V4M7 9l5-5 5 5" />
