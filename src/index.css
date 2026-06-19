@@ -79,21 +79,6 @@ body {
   background-attachment: fixed;
 }
 
-/* Сплошная плашка под «чёлкой»/статус-баром (viewport-fit=cover): закрывает
-   верхнюю безопасную зону цветом «бумаги», чтобы контент не просвечивал под
-   вырезом. На устройствах без выреза высота = 0 и плашка незаметна. */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: env(safe-area-inset-top, 0px);
-  background: var(--paper);
-  z-index: var(--z-toast);
-  pointer-events: none;
-}
-
 /* Зерно поверх всего — печатная фактура */
 body::after {
   content: '';
