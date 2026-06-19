@@ -10,15 +10,27 @@
      а содержимое опускается ниже безопасной зоны — иначе верх «съезжает». */
   padding-top: env(safe-area-inset-top);
   /* Своя GPU-плоскость: на iOS липкая шапка иначе «протекает» — при прокрутке
-     контент призрачно проступает поверх неё в зоне под чёлкой. translateZ(0)
-     выносит шапку на отдельный композиционный слой, и она надёжно перекрывает
-     свою полосу непрозрачным фоном. */
-  transform: translateZ(0);
+     контент призрачно проступает поверх неё в зоне под чёлкой. translate3d(0,0,0)
+     выносит шапку на отдельный композиционный слой (и заодно это базовое,
+     «видимое» состояние прячущейся шапки — см. .headerHidden ниже). */
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+  /* Плавное «прятанье» всей плашки при прокрутке вниз. */
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
 }
 
-/* При прокрутке вниз содержимое плашки разъезжается: логотип уходит влево,
-   правый блок (чипы на мобиле / навигация на десктопе) — вправо. Логика
-   прокрутки (класс scrolled) — в Header.tsx; стили см. ниже у .brand/.nav/.chips. */
+/* Прячущаяся шапка: при прокрутке вниз вся плашка уезжает вверх за край экрана
+   и плавно растворяется; при прокрутке вверх — возвращается целиком (вместе с
+   логотипом, навигацией и чипами). Логика направления — класс scrolled в
+   Header.tsx. */
+.headerHidden {
+  transform: translate3d(0, -100%, 0);
+  opacity: 0;
+  pointer-events: none;
+}
+
 @media (max-width: 1023px) {
   /* Плашка — сплошной фон страницы без матового стекла и без границ: весь верх
      (от чёлки до низа плашки) залит бежевым одним слоем, без полос и швов,
@@ -29,19 +41,6 @@
     -webkit-backdrop-filter: none;
     border-bottom: none;
   }
-}
-
-/* Скрытие логотипа при прокрутке вниз — на всех шириных (мобайл и десктоп):
-   уезжает влево и исчезает. */
-.brand {
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
-}
-.brandHidden {
-  opacity: 0;
-  transform: translateX(-14px);
-  pointer-events: none;
 }
 
 .inner {
@@ -95,21 +94,11 @@
   display: none;
   align-items: center;
   gap: 4px;
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
 }
 @media (min-width: 1024px) {
   .nav {
     display: flex;
   }
-}
-/* Десктоп: при прокрутке вниз вся навигация уезжает вправо и исчезает
-   (зеркально логотипу, который уходит влево). */
-.navHidden {
-  opacity: 0;
-  transform: translateX(14px);
-  pointer-events: none;
 }
 
 /* Аккаунт-контрол: «Профиль» + «Войти» в одной рамке с общей offset-тенью.
@@ -211,18 +200,6 @@
     align-items: center;
     gap: 8px;
   }
-}
-.chips {
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
-}
-/* Мобайл: при прокрутке вниз чипы уезжают вправо и исчезают (зеркально
-   логотипу, который уходит влево). */
-.chipsHidden {
-  opacity: 0;
-  transform: translateX(14px);
-  pointer-events: none;
 }
 .chipBalance {
   display: inline-flex;
