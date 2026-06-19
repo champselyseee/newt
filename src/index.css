@@ -82,23 +82,12 @@ body {
     radial-gradient(circle at 96% 100%, rgba(43, 46, 168, 0.11), transparent 40%);
 }
 
-/* Зерно поверх всего — печатная фактура */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
-  opacity: 0.06;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
+/* Зерно-текстура убрана: это был фиксированный слой на весь экран с
+   mix-blend-mode: multiply. На iOS Safari такой слой пересчитывается на каждом
+   кадре прокрутки, и «застрявший» кадр multiply-смешивания оставлял обесцвеченный
+   серый отпечаток контента в зоне под чёлкой над шапкой. Если без него призрак
+   пропал — вернём зерно безопасной версией (без fixed + multiply). */
 
-/* «Крышка» под чёлкой/статус-баром (iOS, viewport-fit=cover).
-   Высотой ровно в безопасную зону: заливает самый верх экрана тем же сплошным
-   бежевым, что и шапка, поверх декоративных дуотон-пятен. Так весь верх (от
-   края экрана до шапки) — один тон, без подкраски «пятном» и без полосы-шва.
-   На устройствах без выреза env(...) = 0 → высота 0, слой невидим. */
 body::before {
   content: '';
   position: fixed;
