@@ -8,8 +8,17 @@ import {
   pluralDays,
 } from '../../lib/examDates'
 import { useCountUp } from '../../lib/useCountUp'
-import { IconCalendar, IconClock, IconTarget } from '../../lib/icons'
+import { EXAM_SCALES, chunkRows } from '../../lib/examScales'
+import {
+  IconArrowRight,
+  IconCalendar,
+  IconClock,
+  IconTarget,
+} from '../../lib/icons'
 import styles from './CounterPage.module.css'
+
+/* Сколько строк в одной колонке таблицы перевода (длинную шкалу режем на столбцы). */
+const ROWS_PER_COLUMN = 14
 
 /* Горизонт прогресс-полосы: считаем, какую часть «последних 120 дней» уже прошли. */
 const HORIZON_DAYS = 120
@@ -22,6 +31,11 @@ export function CounterPage() {
     const id = window.setInterval(() => setNow(new Date()), 1000)
     return () => window.clearInterval(id)
   }, [])
+
+  // Выбранный предмет в таблице разбалловки (переключатель Русский/Английский).
+  const [scaleId, setScaleId] = useState(EXAM_SCALES[0].id)
+  const scale = EXAM_SCALES.find((s) => s.id === scaleId) ?? EXAM_SCALES[0]
+  const columns = chunkRows(scale.rows, ROWS_PER_COLUMN)
 
   const views = examViews(now)
   const nearest = views[0]
@@ -129,9 +143,74 @@ export function CounterPage() {
         })}
       </div>
 
+      {/* Разбалловка: перевод первичных баллов в тестовые (100-балльные) */}
+      <section className={styles.scales} aria-labelledby="scales-title">
+        <h2 className={styles.h2} id="scales-title">
+          Разбалловка ЕГЭ
+        </h2>
+        <p className={styles.scalesLead}>
+          Перевод первичных баллов в тестовые (по 100-балльной шкале). Найди свой
+          первичный балл слева — рядом тестовый.
+        </p>
+
+        {/* Переключатель предметов */}
+        <div className={styles.segmented} role="group" aria-label="Предмет">
+          {EXAM_SCALES.map((s) => {
+            const active = s.id === scaleId
+            return (
+              <button
+                key={s.id}
+                type="button"
+                aria-pressed={active}
+                className={`${styles.segBtn} ${active ? styles.segActive : ''}`}
+                onClick={() => setScaleId(s.id)}
+              >
+                {s.short}
+              </button>
+            )
+          })}
+        </div>
+
+        <p className={styles.scaleMeta}>
+          <IconArrowRight size={14} /> {scale.subject}: первичный → тестовый (
+          {scale.maxPrimaryScore} → {scale.maxTestScore})
+        </p>
+
+        <motion.div
+          key={scaleId}
+          className={styles.scaleGrid}
+          initial={reduce ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+        >
+          {columns.map((col, ci) => (
+            <table key={ci} className={styles.scaleTable}>
+              <thead>
+                <tr>
+                  <th scope="col">Перв.</th>
+                  <th scope="col">Тест</th>
+                </tr>
+              </thead>
+              <tbody>
+                {col.map((row) => {
+                  const isMax = row.test === scale.maxTestScore
+                  return (
+                    <tr key={row.primary} className={isMax ? styles.maxRow : ''}>
+                      <td>{row.primary}</td>
+                      <td className={styles.testCell}>{row.test}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          ))}
+        </motion.div>
+      </section>
+
       <p className={styles.editHint}>
-        Предметы и даты задаются в файле{' '}
-        <code className={styles.code}>src/lib/examDates.ts</code> — меняй в одну строку.
+        Предметы и даты — в файле{' '}
+        <code className={styles.code}>src/lib/examDates.ts</code>, таблицы перевода — в{' '}
+        <code className={styles.code}>src/data/examScales.json</code>.
       </p>
     </div>
   )
