@@ -4,7 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { Button } from '../ui/Button'
 import { useCountUp } from '../../lib/useCountUp'
 import { WORK_TYPES, WORK_TYPE_ORDER, type WorkType } from '../../lib/workTypes'
-import { DEMO_RESULTS } from '../../lib/demo'
+import { ResultView } from '../result/ResultView'
 import {
   IconArrowRight,
   IconBook,
@@ -251,7 +251,7 @@ export function CheckPage({ onToast }: { onToast: (text: string, kind?: ToastKin
                 <span>Анализируем работу по критериям…</span>
               </motion.div>
             )}
-            {!checking && result && <ResultCard key="result" type={result} />}
+            {!checking && result && <ResultView key="result" type={result} />}
           </AnimatePresence>
         </div>
       </section>
@@ -325,74 +325,5 @@ function StatTile({
       </span>
       <span className={styles.statLabel}>{label}</span>
     </div>
-  )
-}
-
-function ResultCard({ type }: { type: WorkType }) {
-  const meta = WORK_TYPES[type]
-  const res = DEMO_RESULTS[type]
-  // Итог и максимум всегда выводим из критериев — так они гарантированно сходятся.
-  const total = res.criteria.reduce((s, c) => s + c.score, 0)
-  const max = res.criteria.reduce((s, c) => s + c.max, 0)
-  const pct = Math.round((total / max) * 100)
-  const animated = useCountUp(total, 800)
-
-  return (
-    <motion.div
-      className={styles.result}
-      initial={{ opacity: 0, y: 22, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-    >
-      <div className={styles.resultTop}>
-        <div>
-          <span className={styles.resultLabel}>{meta.resultLabel}</span>
-          <h3 className={styles.resultTitle}>Разбор готов</h3>
-        </div>
-        <div className={styles.scoreBadge}>
-          <span className={styles.scoreNum}>
-            {animated}
-            <span className={styles.scoreMax}>/{max}</span>
-          </span>
-          <span className={styles.scorePct}>{pct}%</span>
-        </div>
-      </div>
-
-      <p className={styles.resultSummary}>{res.summary}</p>
-
-      <div className={styles.criteria}>
-        {res.criteria.map((c, i) => {
-          const full = c.score === c.max
-          return (
-            <motion.div
-              key={c.code}
-              className={styles.crit}
-              initial={{ opacity: 0, x: -12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.15 + i * 0.05 }}
-            >
-              <span className={`${styles.critCode} ${full ? styles.critFull : ''}`}>{c.code}</span>
-              <div className={styles.critBody}>
-                <div className={styles.critHead}>
-                  <span className={styles.critTitle}>{c.title}</span>
-                  <span className={styles.critScore}>
-                    {c.score}/{c.max}
-                  </span>
-                </div>
-                <div className={styles.critBar}>
-                  <motion.span
-                    className={`${styles.critFill} ${full ? styles.fillGood : styles.fillWarn}`}
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(c.score / c.max) * 100}%` }}
-                    transition={{ delay: 0.25 + i * 0.05, duration: 0.5, ease: 'easeOut' }}
-                  />
-                </div>
-                <p className={styles.critComment}>{c.comment}</p>
-              </div>
-            </motion.div>
-          )
-        })}
-      </div>
-    </motion.div>
   )
 }
