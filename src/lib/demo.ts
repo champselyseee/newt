@@ -59,38 +59,73 @@ export const DEMO_RESULTS: Record<WorkType, StructuredResult> = {
   },
 
   // ── Английское эссе (задание 38), максимум 14 ──
+  // Реальный пример: эссе по pie-chart «What field do children in Zetland want to work in?».
+  // Текст — работа ученика с ошибками; разметка и оценка — из разбора (EGE_Task38_review).
   essay: {
+    task: {
+      label: 'Задание 38 · Эссе',
+      text: 'Imagine that you are doing a project on what field children in Zetland want to work in. You have found some data on the subject, the results of the survey (see the pie-chart below). Comment on the data in the pie-chart and give your personal opinion on the subject of the project. Write 200–250 words.\n\nДанные опроса (pie-chart): Medicine — 33%, Arts and design — 31%, Police and security — 15%, IT — 12%, Sport — 9%.',
+    },
     score: 11,
     max_score: 14,
     segments: [
       {
-        t: 'Nowadays many people believe that studying abroad is the best way to get a good education. In my opinion, this statement is partly true.\n\nOn the one hand, studying in a foreign country gives students a unique experience. They can improve their language skills and become more independent. This is a very ',
+        t: 'It is widely known that children have a lot of fields they want to work in. While doing a project about what field children in Zetland want to work in, I have found ',
         e: 'none',
       },
-      { t: 'important', e: 'speech' },
-      { t: ' advantage.\n\n', e: 'none' },
-      { t: 'However', e: 'punctuation' },
+      { t: 'a table', e: 'factual' },
+      { t: ' containing some ', e: 'none' },
+      { t: 'offical', e: 'spelling' },
+      { t: ' data.\n\nIf we look at ', e: 'none' },
+      { t: 'the table', e: 'factual' },
+      { t: ' we can see that ', e: 'none' },
+      { t: 'majority', e: 'grammar' },
       {
-        t: ' some people think that education at home is better. They argue that it is cheaper and that students feel more comfortable. ',
+        t: ' of children want to work in medicine (33%). The least popular answer is sport (9%).\n\nLooking at the details, we can see that ',
         e: 'none',
       },
-      { t: 'In a modern world', e: 'grammar' },
+      { t: 'number', e: 'grammar' },
       {
-        t: ', online courses also make local education stronger.\n\nIn conclusion, I think that studying abroad has more advantages, although it is expensive. It is ',
+        t: ' of children who chose police and security (15%) is only six percent more than ',
         e: 'none',
       },
-      { t: 'a important', e: 'grammar' },
-      { t: ' step for a future career.', e: 'none' },
+      { t: 'number', e: 'grammar' },
+      {
+        t: ' of children who chose sport (9%). I think it is related to children’s opinion that, if you become a policeman, you will be cooler than others. Also we can see that ',
+        e: 'none',
+      },
+      { t: 'number', e: 'grammar' },
+      { t: ' of answers medicine (33%) is almost 3 times more than ', e: 'none' },
+      { t: 'number', e: 'grammar' },
+      {
+        t: ' of answers IT (12%). In my opinion it is due to the fact that children want to help other people and save lives more than doing ',
+        e: 'none',
+      },
+      { t: 'a monotonous computer work', e: 'grammar' },
+      {
+        t: '.\n\nThere are some problems that one can face dreaming of a profession in one’s childhood. One of these problems is the fact that childhood dream job ',
+        e: 'none',
+      },
+      { t: 'may not be promising and do not have', e: 'grammar' },
+      {
+        t: ' a good career ladder or salary. To solve this problem, I think people should find another good job and do their childhood dream job as a hobby. Unfortunately it does not work with all jobs but you still can do sport, IT or arts and design as a hobby.\n\nTo conclude, I think it is really important to have ',
+        e: 'none',
+      },
+      { t: 'dream job', e: 'grammar' },
+      {
+        t: ' for children, because it becomes their first goal and teaches them to achieve their aims.',
+        e: 'none',
+      },
     ],
     criteria: [
-      { code: 'К1', score: 3, max: 3, errors: 0, comment: 'Решение коммуникативной задачи: тема раскрыта, формат opinion essay соблюдён.' },
-      { code: 'К2', score: 3, max: 3, errors: 0, comment: 'Организация текста: структура и логические связки выдержаны.' },
-      { code: 'К3', score: 2, max: 3, errors: 1, comment: 'Лексика: повтор слова «important» — стоит варьировать словарь.' },
-      { code: 'К4', score: 2, max: 3, errors: 2, comment: 'Грамматика: ошибки в артиклях («In a modern world», «a important»).' },
-      { code: 'К5', score: 1, max: 2, errors: 1, comment: 'Орфография и пунктуация: пропущена запятая после вводного «However».' },
+      { code: 'К1', score: 2, max: 3, errors: 1, comment: 'Решение задачи: все 5 пунктов плана раскрыты, объём в норме. Минус — pie-chart назван «table» (фактическая ошибка).' },
+      { code: 'К2', score: 3, max: 3, errors: 0, comment: 'Организация: логичные абзацы и средства связи (While, Also, In my opinion, To conclude), структура по плану.' },
+      { code: 'К3', score: 2, max: 3, errors: 2, comment: 'Лексика: хороший запас (promising, career ladder), но ошибки артиклей — «a computer work», «have dream job».' },
+      { code: 'К4', score: 2, max: 3, errors: 2, comment: 'Грамматика: «number of» без артикля the; «may not be… and do not have» — нарушено согласование модала.' },
+      { code: 'К5', score: 2, max: 2, errors: 0, comment: 'Орфография и пунктуация: серьёзных нарушений нет, лишь опечатка «offical».' },
     ],
     summary:
-      'Хорошее эссе с чёткой позицией и структурой. Зоны роста — лексическое разнообразие, артикли и пунктуация при вводных словах.',
+      'Зрелое эссе: план соблюдён, лексика выше среднего, чёткая структура. Три зоны роста: 1) «table» → «pie-chart»; 2) артикли при неисчисляемых и перед number/majority; 3) согласование «may not be… or have». Исправив их — 13–14/14.',
   },
 
   // ── Русское сочинение (задание 27), максимум 22 ──
