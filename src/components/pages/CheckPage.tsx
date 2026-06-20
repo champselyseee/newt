@@ -22,6 +22,13 @@ import styles from './CheckPage.module.css'
 
 const WORK_ICONS = { mail: IconMail, pen: IconPen, book: IconBook }
 
+// Короткие подписи для переключателя примеров (как сегментный контрол на «Счётчике ЕГЭ»).
+const EXAMPLE_LABELS: Record<WorkType, string> = {
+  email: 'Email',
+  essay: 'Эссе',
+  composition: 'Сочинение',
+}
+
 const STATS = [
   { value: 12480, suffix: '', label: 'работ проверено', Icon: IconTarget },
   { value: 96, suffix: '%', label: 'совпадение с экспертом', Icon: IconCheck },
@@ -39,34 +46,26 @@ export function CheckPage({ onToast }: { onToast: (text: string, kind?: ToastKin
   const reduce = useReducedMotion()
   const [selected, setSelected] = useState<WorkType | null>('essay')
   const [text, setText] = useState('')
-  const [checking, setChecking] = useState(false)
-  const [result, setResult] = useState<WorkType | null>(null)
+  // Какой пример разбора показан (null — блок примера ещё скрыт).
+  const [exampleType, setExampleType] = useState<WorkType | null>(null)
   const checkerRef = useRef<HTMLDivElement>(null)
-  const resultRef = useRef<HTMLDivElement>(null)
+  const exampleRef = useRef<HTMLDivElement>(null)
 
   function scrollToChecker() {
     checkerRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
   }
 
-  function runCheck(demoType?: WorkType) {
-    const type = demoType ?? selected
-    if (!type) {
-      onToast('Сначала выберите тип работы', 'error')
-      return
-    }
-    if (!demoType && text.trim().length < 30) {
-      onToast('Добавьте текст работы (это шаблон — можно любой)', 'info')
-    }
-    setChecking(true)
-    setResult(null)
+  // «Посмотреть пример»: показываем блок примера (по умолчанию email) и прокручиваем к нему.
+  function showExample() {
+    setExampleType((t) => t ?? 'email')
     window.setTimeout(() => {
-      setChecking(false)
-      setResult(type)
-      onToast('Готово! Это демо-разбор — пример вывода', 'success')
-      window.setTimeout(() => {
-        resultRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
-      }, 80)
-    }, 1400)
+      exampleRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+    }, 60)
+  }
+
+  // Кнопка проверки в форме — это демо: реальной проверки нет, мягко направляем к примеру.
+  function handleFormCheck() {
+    onToast('Это демо: готовый разбор — в кнопке «Посмотреть пример» вверху', 'info')
   }
 
   return (
@@ -89,7 +88,7 @@ export function CheckPage({ onToast }: { onToast: (text: string, kind?: ToastKin
             <Button size="lg" onClick={scrollToChecker} trailing={<IconArrowRight size={20} />}>
               Проверить работу
             </Button>
-            <Button size="lg" variant="secondary" onClick={() => runCheck('essay')}>
+            <Button size="lg" variant="secondary" onClick={showExample}>
               Посмотреть пример
             </Button>
           </div>
@@ -225,36 +224,48 @@ export function CheckPage({ onToast }: { onToast: (text: string, kind?: ToastKin
             fullWidth
             size="lg"
             className={styles.submit}
-            onClick={() => runCheck()}
-            disabled={checking}
-            leading={checking ? undefined : <IconCheck size={20} />}
+            onClick={handleFormCheck}
+            leading={<IconCheck size={20} />}
           >
-            {checking ? 'Проверяем…' : 'Проверить работу'}
+            Проверить работу
           </Button>
           <p className={styles.disclaimer}>
             Это шаблон интерфейса: проверка демонстрационная, без обращения к серверу.
           </p>
         </div>
 
-        {/* Результат */}
-        <div ref={resultRef}>
-          <AnimatePresence mode="wait">
-            {checking && (
-              <motion.div
-                key="loading"
-                className={styles.resultLoading}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-              >
-                <span className={styles.spinner} aria-hidden="true" />
-                <span>Анализируем работу по критериям…</span>
-              </motion.div>
-            )}
-            {!checking && result && <ResultView key="result" type={result} />}
-          </AnimatePresence>
-        </div>
       </section>
+
+      {/* ── Пример разбора (появляется по кнопке «Посмотреть пример») ── */}
+      {exampleType && (
+        <section className={`container ${styles.exampleSection}`} ref={exampleRef}>
+          <div className={styles.checkerHead}>
+            <h2 className={styles.h2}>Пример разбора</h2>
+            <p className={styles.h2sub}>Выбери тип работы — покажем готовый демо-разбор.</p>
+          </div>
+
+          <div className={styles.segmented} role="group" aria-label="Тип работы для примера">
+            {WORK_TYPE_ORDER.map((t) => {
+              const active = t === exampleType
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  aria-pressed={active}
+                  className={`${styles.segBtn} ${active ? styles.segActive : ''}`}
+                  onClick={() => setExampleType(t)}
+                >
+                  {EXAMPLE_LABELS[t]}
+                </button>
+              )
+            })}
+          </div>
+
+          <AnimatePresence mode="wait">
+            <ResultView key={exampleType} type={exampleType} />
+          </AnimatePresence>
+        </section>
+      )}
 
       {/* ── Как это работает ── */}
       <section className={`container ${styles.steps}`}>
